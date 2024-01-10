@@ -23,7 +23,7 @@ class BooksAdapter : ListAdapter<Book, BookViewHolder>(DiffUtil()) {
         infix fun bind(book: Book) = with(binding) {
             txtTitle.text = book.title
             txtAuthor.text = book.author
-            txtDate.text = book.date
+            txtDate.text = book.year
         }
     }
 
@@ -34,7 +34,7 @@ class BooksAdapter : ListAdapter<Book, BookViewHolder>(DiffUtil()) {
             val diff = Bundle()
             if (old.title != new.title) diff.putString("title", new.title)
             if (old.author != new.author) diff.putString("author", new.author)
-            if (old.date != new.date) diff.putString("date", new.date)
+            if (old.year != new.year) diff.putString("date", new.year)
             return diff
         }
     }
