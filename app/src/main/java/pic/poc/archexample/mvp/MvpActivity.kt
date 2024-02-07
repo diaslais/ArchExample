@@ -1,10 +1,7 @@
 package pic.poc.archexample.mvp
 
 import android.os.Bundle
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
+import pic.poc.archexample.common.Book
 import pic.poc.archexample.common.BooksBaseActivity
 
 class MvpActivity : BooksBaseActivity(), MVP.View {
@@ -14,24 +11,7 @@ class MvpActivity : BooksBaseActivity(), MVP.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle("MVP")
-
-        lifecycleScope.launch {
-            presenter.shouldFinishScreen
-                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .collect { if (it) finish() }
-        }
-
-        lifecycleScope.launch {
-            presenter.showLoading
-                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .collect { if (it) showLoading() else hideLoading() }
-        }
-
-        lifecycleScope.launch {
-            presenter.updateBooksList
-                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .collect { update(it) }
-        }
+        presenter.attachView(this)
     }
 
     override fun backClicked() {
@@ -48,5 +28,22 @@ class MvpActivity : BooksBaseActivity(), MVP.View {
 
     override fun sortClicked() {
         presenter.onSortBookClicked(chooseSortMethod())
+    }
+
+    override fun closeScreen() {
+        finish()
+    }
+
+    override fun showLoading(isLoading: Boolean) {
+        if (isLoading) showLoading() else hideLoading()
+    }
+
+    override fun updateBooksList(books: List<Book>) {
+        update(books)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.detachView()
     }
 }

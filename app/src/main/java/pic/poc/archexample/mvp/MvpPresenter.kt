@@ -1,38 +1,33 @@
 package pic.poc.archexample.mvp
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import pic.poc.archexample.common.Book
 import pic.poc.archexample.common.SortMethod
 
 class MvpPresenter : MVP.Presenter {
 
     private val model = MvpModel()
+    private var view: MVP.View? = null
 
-    private val _shouldFinishScreen = MutableStateFlow(false)
-    override val shouldFinishScreen: StateFlow<Boolean>
-        get() = _shouldFinishScreen
+    fun attachView(view: MVP.View) {
+        this.view = view
+    }
 
-    private val _updateBooksList = MutableStateFlow<List<Book>>(model.getBooksList())
-    override val updateBooksList: StateFlow<List<Book>>
-        get() = _updateBooksList
-
-    private val _showLoading = MutableStateFlow(false)
-    override val showLoading: StateFlow<Boolean>
-        get() = _showLoading
+    fun detachView() {
+        view = null
+    }
 
     override fun onAddBookClicked(book: Book) {
         val updatedList = model.addBook(book)
-        _updateBooksList.value = updatedList
+        view?.updateBooksList(updatedList)
     }
 
     override fun onBackClicked() {
-        _shouldFinishScreen.value = true
+        view?.closeScreen()
     }
 
     override fun onDeleteBookClicked(position: Int) {
         val updatedList = model.removeBook(position)
-        _updateBooksList.value = updatedList
+        view?.updateBooksList(updatedList)
     }
 
     override fun onSortBookClicked(sortMethod: SortMethod) {
@@ -41,6 +36,6 @@ class MvpPresenter : MVP.Presenter {
             SortMethod.BY_AUTHOR -> model.getBooksList().sortedBy { it.author }
             SortMethod.BY_YEAR -> model.getBooksList().sortedBy { it.year }
         }
-        _updateBooksList.value = sortedList
+        view?.updateBooksList(sortedList)
     }
 }

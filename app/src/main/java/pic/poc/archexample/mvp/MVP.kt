@@ -1,6 +1,5 @@
 package pic.poc.archexample.mvp
 
-import kotlinx.coroutines.flow.StateFlow
 import pic.poc.archexample.common.Book
 import pic.poc.archexample.common.SortMethod
 
@@ -11,12 +10,13 @@ interface MVP {
         fun removeBook(position: Int): List<Book>
     }
 
-    interface View
+    interface View {
+        fun closeScreen()
+        fun updateBooksList(books: List<Book>)
+        fun showLoading(isLoading: Boolean)
+    }
 
     interface Presenter {
-        val shouldFinishScreen: StateFlow<Boolean>
-        val updateBooksList: StateFlow<List<Book>>
-        val showLoading: StateFlow<Boolean>
         fun onBackClicked()
         fun onAddBookClicked(book: Book)
         fun onDeleteBookClicked(position: Int)
